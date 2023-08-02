@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 from reportlab.platypus import Paragraph
+from reportlab.platypus import PageBreak
+
 
 df = pd.read_csv('/Users/jon/projects/sadowsky/toplines/output_df_test.csv')
 
@@ -79,7 +81,9 @@ table_style = TableStyle([
 ])
 
 # Iterate over the variables and crosstabs
+tables_written = 0
 for variable, crosstab in crosstabs_v5.items():
+
     # Add a title with the variable name
     title = Paragraph('<font size=12><b>{}</b></font>'.format(variable), styles['Normal'])
     elements.append(title)
@@ -101,6 +105,12 @@ for variable, crosstab in crosstabs_v5.items():
 
     # Add a spacer at the bottom of the table
     elements.append(Spacer(1, 30))
+
+    tables_written += 1
+
+    if tables_written == 2:
+        tables_written = 0
+        elements.append(PageBreak())
 
 # Build the PDF
 doc.build(elements)
