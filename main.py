@@ -3,11 +3,13 @@ from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 from reportlab.platypus import Paragraph
 from reportlab.platypus import PageBreak
+from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent
 
-df = pd.read_csv('/Users/jon/projects/sadowsky/toplines/output_df_test.csv')
+df = pd.read_csv(ROOT / 'output_df_test.csv')
 
-def generate_crosstabs_v5(df):
+def generate_crosstabs(df):
     # Identify the variables that have 'Strongly agree' as one of the responses
     agree_variables = df[df['value_name'] == 'Strongly agree']['variable_name'].unique()
     
@@ -53,10 +55,10 @@ def generate_crosstabs_v5(df):
     return crosstabs
 
 # Generate the crosstabs
-crosstabs_v5 = generate_crosstabs_v5(df)
+crosstabs = generate_crosstabs(df)
 
 # Print the first table to check the results
-crosstabs_v5[list(crosstabs_v5.keys())[0]]
+crosstabs[list(crosstabs.keys())[0]]
 
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, Spacer
@@ -80,9 +82,8 @@ table_style = TableStyle([
     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
 ])
 
-# Iterate over the variables and crosstabs
 tables_written = 0
-for variable, crosstab in crosstabs_v5.items():
+for variable, crosstab in crosstabs.items():
 
     # Add a title with the variable name
     title = Paragraph('<font size=12><b>{}</b></font>'.format(variable), styles['Normal'])
